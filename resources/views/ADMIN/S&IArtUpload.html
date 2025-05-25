@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street & Ink | Art Uploads Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #f5f5f5;
+            --accent: #ff5e5b;
+            --accent-dark: #e04e4b;
+            --text: #333;
+            --text-light: #777;
+            --white: #fff;
+            --black: #000;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 8px;
+            --sidebar-width: 280px;
+        }
+
+        [data-theme="dark"] {
+            --primary: #f5f5f5;
+            --secondary: #1a1a1a;
+            --text: #f0f0f0;
+            --text-light: #bbb;
+            --white: #121212;
+            --black: #f5f5f5;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .form-control[readonly],
+        [data-theme="dark"] .form-control:disabled {
+            color: var(--text) !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        [data-theme="dark"] .form-control::placeholder {
+            color: var(--text-light) !important;
+            opacity: 1;
+        }
+
+        [data-theme="dark"] select.form-control {
+            color: var(--text) !important;
+        }
+
+        [data-theme="dark"] select.form-control option {
+            color: var(--text);
+            background-color: var(--white);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background-color: var(--secondary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button, input, textarea, select {
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            border: none;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            height: 100vh;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .sidebar-logo span {
+            color: var(--accent);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-title {
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-item.active {
+            background-color: rgba(255, 94, 91, 0.1);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background-color: var(--accent);
+            color: var(--white);
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            padding-right: 40px;
+            border-radius: var(--border-radius);
+            background-color: var(--secondary);
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            width: 300px;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .user-menu:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            top: 45px;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary);
+            color: var(--accent);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 5px 0;
+        }
+
+        .theme-toggle {
+            background: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            color: var(--accent);
+            transform: rotate(30deg);
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--accent);
+            color: var(--white);
+            font-size: 0.6rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+
+        .stat-icon.uploads {
+            background-color: #4e73df;
+        }
+
+        .stat-icon.pending {
+            background-color: #f6c23e;
+        }
+
+        .stat-icon.approved {
+            background-color: #1cc88a;
+        }
+
+        .stat-icon.rejected {
+            background-color: #e74a3b;
+        }
+
+        .stat-icon.flagged {
+            background-color: #fd7e14;
+        }
+
+        .stat-icon.weekly {
+            background-color: #6f42c1;
+        }
+
+        .stat-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive {
+            color: #1cc88a;
+        }
+
+        .stat-change.negative {
+            color: #e74a3b;
+        }
+
+        .stat-change i {
+            margin-right: 5px;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background-color: rgba(246, 194, 62, 0.1);
+            color: #f6c23e;
+        }
+
+        .status.approved {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: #1cc88a;
+        }
+
+        .status.rejected {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: #e74a3b;
+        }
+
+        .status.featured {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+        }
+
+        .status.flagged {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar-sm {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-avatar-sm img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name-sm {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .art-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .art-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .art-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .art-thumb img:hover {
+            transform: scale(1.05);
+        }
+
+        .art-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .art-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .art-artist {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary);
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .action-btn.view {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+        }
+
+        .action-btn.view:hover {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .action-btn.approve {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: #1cc88a;
+        }
+
+        .action-btn.approve:hover {
+            background-color: #1cc88a;
+            color: white;
+        }
+
+        .action-btn.reject {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: #e74a3b;
+        }
+
+        .action-btn.reject:hover {
+            background-color: #e74a3b;
+            color: white;
+        }
+
+        .action-btn.feature {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+        }
+
+        .action-btn.feature:hover {
+            background-color: #fd7e14;
+            color: white;
+        }
+
+        .action-btn.edit {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .action-btn.edit:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary);
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .page-btn.active {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            background-color: var(--secondary);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 94, 91, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            color: var(--text-light);
+        }
+
+        .tab.active {
+            color: var(--accent);
+        }
+
+        .tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .tag {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .art-preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            background-color: var(--secondary);
+        }
+
+        .art-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 0.95rem;
+        }
+
+        .detail-value a {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .art-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-input {
+                width: 200px;
+            }
+            
+            .search-input:focus {
+                width: 200px;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .table-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-btns {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+        }
+
+        @media (max-width: 1200px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bulk-checkbox {
+            margin-right: 10px;
+        }
+
+        /* Grid View */
+        .art-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .art-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .art-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .art-card-body {
+            padding: 15px;
+        }
+
+        .art-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .art-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .art-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .art-card-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .art-card-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            background-color: var(--secondary);
+            border-radius: var(--border-radius);
+            padding: 5px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .view-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            color: var(--text-light);
+        }
+
+        .view-btn.active {
+            background-color: var(--white);
+            color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+     <!-- Sidebar -->
+     <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">Street & <span>Ink</span></div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-title">Main</div>
+            <a href="AdminDashboard.php" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <div class="menu-title">Management</div>
+            <a href="UserManagement.php" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>User Management</span>
+                <span class="menu-badge">5 new</span>
+            </a>
+            <a href="ArtUpload.php" class="menu-item active">
+                <i class="fas fa-paint-brush"></i>
+                <span>Art Uploads</span>
+                <span class="menu-badge">12 pending</span>
+            </a>
+            <a href="Reports.php" class="menu-item">
+                <i class="fas fa-flag"></i>
+                <span>Reports & Moderation</span>
+            </a>
+            <a href="Location.php" class="menu-item">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Location Management</span>
+            </a>
+            <a href="Artist&Partners.php" class="menu-item">
+                <i class="fas fa-palette"></i>
+                <span>Artist & Partners</span>
+                <span class="menu-badge">3 new</span>
+            </a>
+
+            <div class="menu-title">Content</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-envelope"></i>
+                <span>Contact & Feedback</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-comments"></i>
+                <span>Comment Moderation</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-newspaper"></i>
+                <span>Frontend Content</span>
+            </a>
+
+            <div class="menu-title">System</div>
+            <a href="Backup.php" class="menu-item">
+                <i class="fas fa-database"></i>
+                <span>Data & Backup</span>
+            </a>
+            <a href="Setting.php" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Admin Settings</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 class="header-title">Art Uploads Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search artworks...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin">
+                    </div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-dropdown">
+                        <a href="#" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Uploads Summary -->
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-icon uploads">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="stat-title">Total Uploads</div>
+                <div class="stat-value">25,189</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 8.3% from last month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-title">Pending Submissions</div>
+                <div class="stat-value">12</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 2.1% from last week
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-title">Approved</div>
+                <div class="stat-value">23,456</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 5.7% from last month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rejected">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-title">Rejected</div>
+                <div class="stat-value">1,721</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 1.2% from last month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon flagged">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <div class="stat-title">Flagged Reports</div>
+                <div class="stat-value">8</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 3.5% from last week
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon weekly">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-title">Uploads This Week</div>
+                <div class="stat-value">342</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 12.8% from last week
+                </div>
+            </div>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="view-btn active" id="tableViewBtn">
+                <i class="fas fa-list"></i> Table View
+            </button>
+            <button class="view-btn" id="gridViewBtn">
+                <i class="fas fa-th-large"></i> Grid View
+            </button>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-control">
+                        <option>All Statuses</option>
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                        <option>Flagged</option>
+                        <option>Featured</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">Artist Type</label>
+                    <select class="form-control">
+                        <option>All Artists</option>
+                        <option>Verified Only</option>
+                        <option>Regular Users</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">Location</label>
+                    <select class="form-control">
+                        <option>All Locations</option>
+                        <option>New York, USA</option>
+                        <option>London, UK</option>
+                        <option>Berlin, Germany</option>
+                        <option>Tokyo, Japan</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="form-label">Date Range</label>
+                    <select class="form-control">
+                        <option>All Time</option>
+                        <option>Today</option>
+                        <option>This Week</option>
+                        <option>This Month</option>
+                        <option>Last 3 Months</option>
+                        <option>Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">Tag/Style</label>
+                    <select class="form-control">
+                        <option>All Tags</option>
+                        <option>Graffiti</option>
+                        <option>Mural</option>
+                        <option>Stencil</option>
+                        <option>Installation</option>
+                        <option>Political</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-control">
+                        <option>Newest First</option>
+                        <option>Oldest First</option>
+                        <option>Most Popular</option>
+                        <option>Most Reported</option>
+                        <option>Title (A-Z)</option>
+                        <option>Title (Z-A)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions">
+            <input type="checkbox" id="selectAll" class="bulk-checkbox">
+            <label for="selectAll">Select All</label>
+            <button class="btn btn-secondary btn-sm">
+                <i class="fas fa-check"></i> Approve Selected
+            </button>
+            <button class="btn btn-secondary btn-sm">
+                <i class="fas fa-times"></i> Reject Selected
+            </button>
+            <button class="btn btn-secondary btn-sm">
+                <i class="fas fa-star"></i> Feature Selected
+            </button>
+            <button class="btn btn-secondary btn-sm">
+                <i class="fas fa-trash"></i> Delete Selected
+            </button>
+            <button class="btn btn-secondary btn-sm">
+                <i class="fas fa-file-export"></i> Export Selected
+            </button>
+        </div>
+
+        <!-- Table View -->
+        <div class="data-table" id="tableView">
+            <div class="table-header">
+                <h3 class="table-title">Artwork Submissions</h3>
+                <div class="table-actions">
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Add Artwork
+                    </button>
+                    <button class="btn btn-secondary btn-sm">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox"></th>
+                            <th>Artwork</th>
+                            <th>Artist</th>
+                            <th>Location</th>
+                            <th>Tags</th>
+                            <th>Uploaded</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="art-cell">
+                                    <div class="art-thumb">
+                                        <img src="img/pexels-vincent-gerbouin-445991-2263686.jpg" alt="Urban Flame">
+                                    </div>
+                                    <div class="art-info">
+                                        <div class="art-title">Urban Flame</div>
+                                        <div class="art-artist">@inkboi (unverified)</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Artist">
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="user-name-sm">David Peterson</div>
+                                        <div class="user-email">@inkboi</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Manila, PH</td>
+                            <td>
+                                <div class="tags">
+                                    <span class="tag">#Graffiti</span>
+                                    <span class="tag">#Street</span>
+                                </div>
+                            </td>
+                            <td>Today, 10:15 AM</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn approve" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="action-btn feature" title="Feature">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="art-cell">
+                                    <div class="art-thumb">
+                                        <img src="img/pexels-conojeghuo-173301.jpg" alt="Color Explosion">
+                                    </div>
+                                    <div class="art-info">
+                                        <div class="art-title">Color Explosion</div>
+                                        <div class="art-artist">@maya_hayuk</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Artist">
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="user-name-sm">Sarah Johnson</div>
+                                        <div class="user-email">@maya_hayuk</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Williamsburg, NYC</td>
+                            <td>
+                                <div class="tags">
+                                    <span class="tag">#Mural</span>
+                                    <span class="tag">#Abstract</span>
+                                </div>
+                            </td>
+                            <td>Today, 9:30 AM</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn approve" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="action-btn feature" title="Feature">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="art-cell">
+                                    <div class="art-thumb">
+                                        <img src="img/pexels-fernando-dos-santos-campos-1309016-2510245 (1).jpg" alt="The Thinker">
+                                    </div>
+                                    <div class="art-info">
+                                        <div class="art-title">The Thinker</div>
+                                        <div class="art-artist">Unknown Artist</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm">
+                                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User">
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="user-name-sm">Lena Kowalski</div>
+                                        <div class="user-email">@lena_k</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Berlin, Germany</td>
+                            <td>
+                                <div class="tags">
+                                    <span class="tag">#Sculpture</span>
+                                    <span class="tag">#Classic</span>
+                                </div>
+                            </td>
+                            <td>Yesterday, 5:45 PM</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn approve" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="action-btn feature" title="Feature">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="art-cell">
+                                    <div class="art-thumb">
+                                        <img src="img/pexels-heftiba-1194420.jpg" alt="Neon Dreams">
+                                    </div>
+                                    <div class="art-info">
+                                        <div class="art-title">Neon Dreams</div>
+                                        <div class="art-artist">@dface</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm">
+                                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Artist">
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="user-name-sm">James Lee</div>
+                                        <div class="user-email">@dface</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Downtown LA</td>
+                            <td>
+                                <div class="tags">
+                                    <span class="tag">#Neon</span>
+                                    <span class="tag">#Installation</span>
+                                </div>
+                            </td>
+                            <td>Yesterday, 3:20 PM</td>
+                            <td><span class="status approved">Approved</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn feature" title="Feature">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="art-cell">
+                                    <div class="art-thumb">
+                                        <img src="img/pexels-tobiasbjorkli-2119706 (1).jpg" alt="Abstract Flow">
+                                    </div>
+                                    <div class="art-info">
+                                        <div class="art-title">Abstract Flow</div>
+                                        <div class="art-artist">@felipe_pantone</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm">
+                                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Artist">
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="user-name-sm">Priya Kumar</div>
+                                        <div class="user-email">@felipe_pantone</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Wynwood, Miami</td>
+                            <td>
+                                <div class="tags">
+                                    <span class="tag">#Abstract</span>
+                                    <span class="tag">#Modern</span>
+                                </div>
+                            </td>
+                            <td>Yesterday, 1:10 PM</td>
+                            <td><span class="status featured">Featured</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn feature" title="Unfeature">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <div class="pagination-info">Showing 1 to 5 of 12 pending approvals</div>
+                <div class="pagination-btns">
+                    <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid View (Hidden by default) -->
+        <div class="art-grid" id="gridView" style="display: none;">
+            <div class="art-card">
+                <img src="img/pexels-vincent-gerbouin-445991-2263686.jpg" alt="Urban Flame" class="art-card-img" onclick="openArtModal('Urban Flame')">
+                <div class="art-card-body">
+                    <div class="art-card-title">Urban Flame</div>
+                    <div class="art-card-meta">
+                        <span>@inkboi</span>
+                        <span>Manila, PH</span>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">#Graffiti</span>
+                        <span class="tag">#Street</span>
+                    </div>
+                    <div class="art-card-footer">
+                        <span class="art-card-status pending">Pending</span>
+                        <div class="art-card-actions">
+                            <button class="action-btn view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="art-card">
+                <img src="img/pexels-conojeghuo-173301.jpg" alt="Color Explosion" class="art-card-img" onclick="openArtModal('Color Explosion')">
+                <div class="art-card-body">
+                    <div class="art-card-title">Color Explosion</div>
+                    <div class="art-card-meta">
+                        <span>@maya_hayuk</span>
+                        <span>Williamsburg, NYC</span>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">#Mural</span>
+                        <span class="tag">#Abstract</span>
+                    </div>
+                    <div class="art-card-footer">
+                        <span class="art-card-status pending">Pending</span>
+                        <div class="art-card-actions">
+                            <button class="action-btn view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="art-card">
+                <img src="img/pexels-fernando-dos-santos-campos-1309016-2510245 (1).jpg" alt="The Thinker" class="art-card-img" onclick="openArtModal('The Thinker')">
+                <div class="art-card-body">
+                    <div class="art-card-title">The Thinker</div>
+                    <div class="art-card-meta">
+                        <span>@lena_k</span>
+                        <span>Berlin, Germany</span>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">#Sculpture</span>
+                        <span class="tag">#Classic</span>
+                    </div>
+                    <div class="art-card-footer">
+                        <span class="art-card-status pending">Pending</span>
+                        <div class="art-card-actions">
+                            <button class="action-btn view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="art-card">
+                <img src="img/pexels-heftiba-1194420.jpg" alt="Neon Dreams" class="art-card-img" onclick="openArtModal('Neon Dreams')">
+                <div class="art-card-body">
+                    <div class="art-card-title">Neon Dreams</div>
+                    <div class="art-card-meta">
+                        <span>@dface</span>
+                        <span>Downtown LA</span>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">#Neon</span>
+                        <span class="tag">#Installation</span>
+                    </div>
+                    <div class="art-card-footer">
+                        <span class="art-card-status approved">Approved</span>
+                        <div class="art-card-actions">
+                            <button class="action-btn view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn feature" title="Feature">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="art-card">
+                <img src="img/pexels-tobiasbjorkli-2119706 (1).jpg" alt="Abstract Flow" class="art-card-img" onclick="openArtModal('Abstract Flow')">
+                <div class="art-card-body">
+                    <div class="art-card-title">Abstract Flow</div>
+                    <div class="art-card-meta">
+                        <span>@felipe_pantone</span>
+                        <span>Wynwood, Miami</span>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">#Abstract</span>
+                        <span class="tag">#Modern</span>
+                    </div>
+                    <div class="art-card-footer">
+                        <span class="art-card-status featured">Featured</span>
+                        <div class="art-card-actions">
+                            <button class="action-btn view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn feature" title="Unfeature">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artwork Detail Modal -->
+        <div class="modal" id="artModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalArtTitle">Artwork Details</h3>
+                    <button class="modal-close" onclick="closeArtModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <img src="img/pexels-vincent-gerbouin-445991-2263686.jpg" alt="Artwork Preview" class="art-preview">
+                    <div class="art-details">
+                        <div>
+                            <div class="detail-group">
+                                <div class="detail-label">Artist</div>
+                                <div class="detail-value">
+                                    <a href="#">@inkboi (David Peterson)</a>
+                                </div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">Manila, Philippines</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Coordinates</div>
+                                <div class="detail-value">14.5995° N, 120.9842° E</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Upload Date</div>
+                                <div class="detail-value">June 15, 2023 at 10:15 AM</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="detail-group">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value"><span class="status pending">Pending Approval</span></div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Tags</div>
+                                <div class="tags">
+                                    <span class="tag">#Graffiti</span>
+                                    <span class="tag">#Street</span>
+                                    <span class="tag">#Urban</span>
+                                </div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">A vibrant graffiti piece depicting urban life with fiery colors and dynamic shapes. Captured in the streets of Manila during the annual street art festival.</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Reports</div>
+                                <div class="detail-value">No reports</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeArtModal()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-star"></i> Feature
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Artwork Modal -->
+        <div class="modal" id="editArtModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Artwork Details</h3>
+                    <button class="modal-close" onclick="closeEditArtModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Artwork Title</label>
+                                    <input type="text" class="form-control" value="Urban Flame">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Artist</label>
+                                    <input type="text" class="form-control" value="@inkboi (David Peterson)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" value="Manila, Philippines">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Coordinates</label>
+                                    <input type="text" class="form-control" value="14.5995° N, 120.9842° E">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tags (comma separated)</label>
+                            <input type="text" class="form-control" value="Graffiti, Street, Urban">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control form-textarea">A vibrant graffiti piece depicting urban life with fiery colors and dynamic shapes. Captured in the streets of Manila during the annual street art festival.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control">
+                                <option>Pending</option>
+                                <option selected>Approved</option>
+                                <option>Rejected</option>
+                                <option>Featured</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Replacement Image (optional)</label>
+                            <input type="file" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeEditArtModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            mobileMenuBtn.innerHTML = sidebar.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.setAttribute('data-theme', 
+                body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            
+            // Save preference to localStorage
+            localStorage.setItem('theme', body.getAttribute('data-theme'));
+            
+            // Update icon
+            themeToggle.innerHTML = body.getAttribute('data-theme') === 'dark' ? 
+                '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.setAttribute('data-theme', savedTheme);
+            themeToggle.innerHTML = savedTheme === 'dark' ? 
+                '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+        
+        // View Toggle
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const tableView = document.getElementById('tableView');
+        const gridView = document.getElementById('gridView');
+        
+        tableViewBtn.addEventListener('click', () => {
+            tableViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            tableView.style.display = 'block';
+            gridView.style.display = 'none';
+        });
+        
+        gridViewBtn.addEventListener('click', () => {
+            gridViewBtn.classList.add('active');
+            tableViewBtn.classList.remove('active');
+            gridView.style.display = 'grid';
+            tableView.style.display = 'none';
+        });
+        
+        // Artwork Modal
+        function openArtModal(title) {
+            document.getElementById('modalArtTitle').textContent = title;
+            document.getElementById('artModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeArtModal() {
+            document.getElementById('artModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Edit Artwork Modal
+        function openEditArtModal() {
+            document.getElementById('editArtModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeEditArtModal() {
+            document.getElementById('editArtModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('artModal')) {
+                closeArtModal();
+            }
+            if (e.target === document.getElementById('editArtModal')) {
+                closeEditArtModal();
+            }
+        });
+        
+        // Simulate notification click
+        document.querySelector('.notification-btn').addEventListener('click', () => {
+            alert('Notification center would open here showing recent system alerts and messages.');
+        });
+        
+        // Simulate user dropdown
+        document.querySelector('.user-menu').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelector('.user-dropdown').classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelector('.user-dropdown').classList.remove('active');
+        });
+        
+        // View buttons in table
+        document.querySelectorAll('.action-btn.view').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const title = btn.closest('tr').querySelector('.art-title').textContent;
+                openArtModal(title);
+            });
+        });
+        
+        // Edit buttons in table
+        document.querySelectorAll('.action-btn.edit').forEach(btn => {
+            btn.addEventListener('click', openEditArtModal);
+        });
+        
+        // Bulk select all checkbox
+        document.getElementById('selectAll').addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+        });
+    </script>
+</body>
+</html>
